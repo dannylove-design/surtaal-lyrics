@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101116">
+<meta name="description" content="Private, local-first Hindi and Bhojpuri audio transcription with timestamps.">
+<link rel="manifest" href="manifest.webmanifest">
+<title>SurTaal Lyrics — निजी Lyrics Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#101116;--panel:#191a20;--line:#30323b;--gold:#e3ad3f;--text:#f4f4f6;--muted:#a6a7af}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Noto Sans Devanagari",sans-serif}
+header{position:sticky;top:0;background:#101116ed;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:center;gap:12px;z-index:2}
+.logo{width:42px;height:42px;border-radius:50%;background:var(--gold);color:#17130b;display:grid;place-items:center;font-size:24px;font-weight:800}
+h1{font-size:21px;margin:0}header small{display:block;color:var(--muted);font-size:12px}
+main{max-width:780px;margin:auto;padding:20px 14px 48px}.intro{text-align:center;margin:10px 0 24px}.intro h2{font-size:clamp(23px,5vw,34px);line-height:1.25;margin:0 0 8px}.intro p{color:var(--muted);margin:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:22px;padding:18px;margin:16px 0}
+.drop{border:2px dashed #454752;border-radius:15px;padding:24px 12px;text-align:center}
+input,select,button,textarea{font:inherit}input[type=file]{width:100%;max-width:100%;margin:12px 0;color:var(--muted)}
+select,button,.field{width:100%;border-radius:12px;border:1px solid var(--line);background:#14151a;color:var(--text);padding:13px}
+button{cursor:pointer;font-weight:650}button.primary{background:var(--gold);color:#19140b;border:0}button:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.row{display:flex;gap:10px;align-items:center}.row>*{flex:1}
+label{display:block;font-weight:650;margin:16px 0 7px}.hint,.status{color:var(--muted);font-size:13px}.status{margin:12px 0;white-space:pre-wrap}.progress{height:6px;background:#30323b;border-radius:99px;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
+.resultHead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.resultHead h3{margin:0}.resultActions{display:flex;gap:8px;flex-wrap:wrap}.resultActions button{width:auto;padding:9px 12px}
+textarea{width:100%;min-height:280px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:14px;background:#111217;color:var(--text);line-height:1.75;margin-top:12px}
+.note{border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--muted);font-size:13px;margin-top:16px}.danger{color:#ffd48a}.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:10px 18px 30px}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.panel{padding:14px}.resultActions{width:100%}.resultActions button{flex:1}}
+</style>
+</head>
+<body>
+<header><div class="logo">♫</div><div><h1>SurTaal Lyrics</h1><small>Private • No login • No credits</small></div></header>
+<main>
+<section class="intro"><h2>गाने से बोल निकालें</h2><p>ऑडियो चुनें, ट्रांसक्रिप्शन करें, सुधारें और डाउनलोड करें।</p></section>
+<section class="panel">
+<div class="drop"><strong>अपनी ऑडियो फ़ाइल चुनें</strong><input id="audioFile" type="file" accept="audio/*"><div class="hint">MP3, WAV, M4A आदि — ब्राउज़र जिन फ़ॉर्मेट को चला सके। लंबे गाने मोबाइल पर धीमे हो सकते हैं।</div></div>
+<label for="language">गाने की भाषा</label>
+<select id="language"><option value="hi">हिंदी (भोजपुरी के लिए भी आज़माएँ)</option><option value="auto">Auto / multilingual</option><option value="en">English</option></select>
+<label for="model">मॉडल</label>
+<select id="model"><option value="onnx-community/whisper-tiny">Whisper Tiny — कम डाउनलोड, मोबाइल के लिए बेहतर</option><option value="onnx-community/whisper-base">Whisper Base — बेहतर संभावना, अधिक मेमोरी/डाउनलोड</option></select>
+<div class="note">पहली बार मॉडल इंटरनेट से डाउनलोड होगा (कई दसियों से कुछ सौ MB तक, मॉडल के अनुसार)। उसके बाद ब्राउज़र कैश में उपलब्ध रह सकता है। प्रोसेसिंग आपके ब्राउज़र में होती है; ऑडियो किसी अपने सर्वर/API को नहीं भेजा जाता। मॉडल डाउनलोड करने के लिए इंटरनेट चाहिए।</div>
+<div class="grid"><button id="start" class="primary" disabled>♫ Lyrics निकालें</button><button id="stop" disabled>रोकें</button></div>
+<div id="status" class="status" role="status">पहले ऑडियो फ़ाइल चुनें।</div><div class="progress"><span id="bar"></span></div>
+</section>
+<section id="results" class="panel hidden">
+<div class="resultHead"><h3>आपके Lyrics</h3><div class="resultActions"><button id="copy">कॉपी</button><button id="downloadTxt">TXT डाउनलोड</button><button id="downloadSrt">SRT डाउनलोड</button></div></div>
+<p class="hint">नीचे टेक्स्ट एडिट किया जा सकता है। टाइमस्टैम्प अनुमानित chunk/segment समय हैं; संगीत में शब्द पहचानने की सटीकता अलग-अलग हो सकती है।</p>
+<textarea id="transcript" spellcheck="false" placeholder="पहचाने गए बोल यहाँ आएँगे…"></textarea>
+</section>
+<div class="note"><strong>महत्वपूर्ण:</strong> गानों में संगीत, इको और गायकी के कारण Whisper गलतियाँ कर सकता है। भोजपुरी के लिए हिंदी विकल्प आज़माएँ और टेक्स्ट को ज़रूर प्रूफरीड करें। YouTube URL से ऑडियो डाउनलोड करना इस संस्करण में शामिल नहीं है; पहले कानूनी रूप से प्राप्त ऑडियो फ़ाइल अपलोड करें।</div>
+</main>
+<footer>SurTaal Lyrics • निजी उपयोग के लिए • कोई अकाउंट या क्रेडिट सिस्टम नहीं</footer>
+<script type="module" src="app.js"></script>
+</body></html>
